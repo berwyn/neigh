@@ -1,1 +1,1 @@
-include ':common', ':pvl', ':eqbeats'
+include ':common', ':pvl', ':eqbeats', ':bronytunes'
