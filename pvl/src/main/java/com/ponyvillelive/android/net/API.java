@@ -91,7 +91,7 @@ public interface API {
     public static class Builder {
 
         private String host         = "https://ponyvillelive.apiary.io/api";
-        private Converter converter = new GsonUnwrapperConverter(new Gson());
+        private Converter converter = new GsonConverter(new Gson());
         private Client client       = new OkClient();
 
         public void setHost(String host) { this.host = host; }
