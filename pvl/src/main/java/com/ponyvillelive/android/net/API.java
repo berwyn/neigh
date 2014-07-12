@@ -52,11 +52,10 @@ public interface API {
 
     /*
      * Song resources
-     * TODO: Implement
      */
 
     @GET("/song/index/id/{songId}")
-    public void song(@Path("songId") int songId, Callback<SongResponse> callback);
+    public Observable<SongResponse> song(@Path("songId") int songId);
 
     /*
      * Station resources

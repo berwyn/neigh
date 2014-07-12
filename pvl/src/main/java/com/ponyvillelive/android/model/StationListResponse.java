@@ -6,6 +6,6 @@ package com.ponyvillelive.android.model;
 public class StationListResponse {
 
     public String status;
-    public Station[] stations;
+    public Station[] result;
 
 }
