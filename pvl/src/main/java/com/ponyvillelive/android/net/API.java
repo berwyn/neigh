@@ -1,8 +1,10 @@
 package com.ponyvillelive.android.net;
 
 import com.google.gson.Gson;
+import com.ponyvillelive.android.model.SongResponse;
 import com.ponyvillelive.android.model.StationListResponse;
 import com.ponyvillelive.android.model.StationResponse;
+import com.squareup.okhttp.OkHttpClient;
 
 import retrofit.Callback;
 import retrofit.RestAdapter;
@@ -12,6 +14,7 @@ import retrofit.converter.Converter;
 import retrofit.converter.GsonConverter;
 import retrofit.http.GET;
 import retrofit.http.Path;
+import rx.Observable;
 
 /**
  * API contract for Ponyville Live! as documented at
@@ -53,23 +56,23 @@ public interface API {
      */
 
     @GET("/song/index/id/{songId}")
-    public void song(@Path("songId") int songId, Callback<?> callback);
+    public void song(@Path("songId") int songId, Callback<SongResponse> callback);
 
     /*
      * Station resources
      */
 
     @GET("/station/list")
-    public void stations(Callback<StationListResponse> callback);
+    public Observable<StationListResponse> stations();
 
     @GET("/station/list/category/{category}")
-    public void stations(@Path("category") String category, Callback<StationListResponse> callback);
+    public Observable<StationListResponse> stations(@Path("category") String category);
 
     @GET("/station/index/id/{id}")
-    public void station(@Path("id") int id, Callback<StationResponse> callback);
+    public Observable<StationResponse> station(@Path("id") int id);
 
     @GET("/station/index/station/{shortcode}")
-    public void station(@Path("shortcode") String shortcode, Callback<StationResponse> callback);
+    public Observable<StationResponse> station(@Path("shortcode") String shortcode);
 
     /*
      * Shows/Podcasts
@@ -88,20 +91,14 @@ public interface API {
     public static class Builder {
 
         private String host         = "https://ponyvillelive.apiary.io/api";
-        private Converter converter = new GsonConverter(new Gson());
+        private Converter converter = new GsonUnwrapperConverter(new Gson());
         private Client client       = new OkClient();
 
-        public void setHost(String host) {
-            this.host = host;
-        }
+        public void setHost(String host) { this.host = host; }
 
-        public void setConverter(Converter converter) {
-            this.converter = converter;
-        }
+        public void setConverter(Converter converter) { this.converter = converter; }
 
-        public void setClient(Client client) {
-            this.client = client;
-        }
+        public void setClient(Client client) { this.client = client; }
 
         public API build() {
             return new RestAdapter.Builder()

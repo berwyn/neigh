@@ -50,6 +50,7 @@ dependencies {
     compile 'com.squareup.okhttp:okhttp:2.0.+'
     compile 'com.squareup.retrofit:retrofit:1.6.+'
     compile 'com.squareup.picasso:picasso:2.2.+'
+    compile 'com.netflix.rxjava:rxjava-android:0.19.+'
     compile 'com.astuetz:pagerslidingtabstrip:1.0.+'
 
     // You must install or update the Support Repository through the SDK manager to use this dependency.
