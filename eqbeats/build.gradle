@@ -1,38 +1,15 @@
-buildscript {
-    repositories {
-        jcenter()
-    }
-    dependencies {
-        classpath 'com.android.tools.build:gradle:0.12.+'
-    }
-}
 apply plugin: 'com.android.application'
-
-repositories {
-    jcenter()
-}
+apply from: '../android.gradle'
+apply plugin: 'retrolambda'
+apply from: '../retrolambda.gradle'
 
 android {
-    compileSdkVersion 'android-L'
-    buildToolsVersion "20.0.0"
-
     defaultConfig {
         applicationId "org.eqbeats.android"
         minSdkVersion 'L'
         targetSdkVersion 'L'
         versionCode 1
         versionName "1.0"
-    }
-
-    compileOptions {
-        sourceCompatibility JavaVersion.VERSION_1_7
-        targetCompatibility JavaVersion.VERSION_1_7
-    }
-    buildTypes {
-        release {
-            runProguard false
-            proguardFiles getDefaultProguardFile('proguard-android.txt'), 'proguard-rules.pro'
-        }
     }
 }
 

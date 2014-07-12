@@ -1,24 +1,9 @@
-buildscript {
-    repositories {
-        jcenter()
-    }
-    dependencies {
-        classpath 'com.android.tools.build:gradle:0.12.+'
-        classpath 'me.tatarka:gradle-retrolambda:2.0.+'
-    }
-}
 apply plugin: 'com.android.application'
+apply from: '../android.gradle'
 apply plugin: 'retrolambda'
-apply from: '../local.gradle'
-
-repositories {
-    jcenter()
-}
+apply from: '../retrolambda.gradle'
 
 android {
-    compileSdkVersion 'android-L'
-    buildToolsVersion '20.0.0'
-
     defaultConfig {
         applicationId "com.ponyvillelive.android"
         minSdkVersion 'L'
@@ -26,30 +11,19 @@ android {
         versionCode 1
         versionName "1.0"
     }
-
-    compileOptions {
-        sourceCompatibility JavaVersion.VERSION_1_8
-        targetCompatibility JavaVersion.VERSION_1_8
-    }
-    buildTypes {
-        release {
-            runProguard false
-            proguardFiles getDefaultProguardFile('proguard-android.txt'), 'proguard-rules.pro'
-        }
-        debug {
-            applicationIdSuffix '.debug'
-            versionNameSuffix '-DEBUG'
-        }
-    }
 }
 
 dependencies {
     compile fileTree(dir: 'libs', include: ['*.jar'])
-    compile 'com.jakewharton:butterknife:5.1.+'
+
+    provided 'com.squareup.dagger:dagger-compiler:1.2.+'
+
     compile 'com.google.code.gson:gson:2.2.+'
     compile 'com.squareup.okhttp:okhttp:2.0.+'
     compile 'com.squareup.retrofit:retrofit:1.6.+'
     compile 'com.squareup.picasso:picasso:2.2.+'
+    compile 'com.squareup.dagger:dagger:1.2.1'
+    compile 'com.jakewharton:butterknife:5.1.+'
     compile 'com.netflix.rxjava:rxjava-android:0.19.+'
     compile 'com.astuetz:pagerslidingtabstrip:1.0.+'
 

@@ -3,7 +3,7 @@ neigh
 
 The sound horses make
 
-Make sure to create a local.gradle in the top-level folder that looks something like this:
+Make sure to create a retrolambda.gradle in the top-level folder that looks something like this:
 
 ```gradle
 retrolambda {
