@@ -12,9 +12,14 @@ import android.view.MenuItem;
 import android.view.View;
 import android.view.ViewGroup;
 
+import com.astuetz.PagerSlidingTabStrip;
 import com.ponyvillelive.android.R;
+import com.sothree.slidinguppanel.SlidingUpPanelLayout;
 
 import java.util.Locale;
+
+import butterknife.ButterKnife;
+import butterknife.InjectView;
 
 
 public class MainActivity extends Activity {
@@ -25,29 +30,26 @@ public class MainActivity extends Activity {
      * {@link FragmentPagerAdapter} derivative, which will keep every
      * loaded fragment in memory. If this becomes too memory intensive, it
      * may be best to switch to a
-     * {@link android.support.v13.app.FragmentStatePagerAdapter}.
+     * {@link android.support.v4.app.FragmentStatePagerAdapter}.
      */
-    SectionsPagerAdapter mSectionsPagerAdapter;
-
-    /**
-     * The {@link ViewPager} that will host the section contents.
-     */
-    ViewPager mViewPager;
+    SectionsPagerAdapter sectionsPagerAdapter;
+    @InjectView(R.id.pager)
+    ViewPager            viewPager;
+    @InjectView(R.id.tabs)
+    PagerSlidingTabStrip tabStrip;
+    @InjectView(R.id.view_slideup_panel)
+    SlidingUpPanelLayout slidingPanel;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_main);
 
+        sectionsPagerAdapter = new SectionsPagerAdapter(getFragmentManager());
+        ButterKnife.inject(this);
 
-        // Create the adapter that will return a fragment for each of the three
-        // primary sections of the activity.
-        mSectionsPagerAdapter = new SectionsPagerAdapter(getFragmentManager());
-
-        // Set up the ViewPager with the sections adapter.
-        mViewPager = (ViewPager) findViewById(R.id.pager);
-        mViewPager.setAdapter(mSectionsPagerAdapter);
-
+        viewPager.setAdapter(sectionsPagerAdapter);
+        tabStrip.setViewPager(viewPager);
     }
 
 
@@ -82,7 +84,12 @@ public class MainActivity extends Activity {
         public Fragment getItem(int position) {
             // getItem is called to instantiate the fragment for the given page.
             // Return a PlaceholderFragment (defined as a static inner class below).
-            return PlaceholderFragment.newInstance(position + 1);
+            switch (position) {
+                case 0:
+                    return StationFragment.newInstance();
+                default:
+                    return PlaceholderFragment.newInstance(position + 1);
+            }
         }
 
         @Override

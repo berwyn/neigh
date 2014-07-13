@@ -4,10 +4,9 @@ import com.google.gson.Gson;
 import com.ponyvillelive.android.model.SongResponse;
 import com.ponyvillelive.android.model.StationListResponse;
 import com.ponyvillelive.android.model.StationResponse;
-import com.squareup.okhttp.OkHttpClient;
 
-import retrofit.Callback;
 import retrofit.RestAdapter;
+import retrofit.android.AndroidApacheClient;
 import retrofit.client.Client;
 import retrofit.client.OkClient;
 import retrofit.converter.Converter;
@@ -15,6 +14,8 @@ import retrofit.converter.GsonConverter;
 import retrofit.http.GET;
 import retrofit.http.Path;
 import rx.Observable;
+
+//import com.squareup.okhttp.OkHttpClient;
 
 /**
  * API contract for Ponyville Live! as documented at
@@ -28,13 +29,13 @@ public interface API {
      */
 
     @GET("/nowplaying")
-    public void nowPlaying(Callback<?> callback);
+    public Observable<?> nowPlaying();
 
     @GET("/nowplaying/index/id/{id}")
-    public void nowPlaying(@Path("id") int id, Callback<?> callback);
+    public Observable<?> nowPlaying(@Path("id") int id);
 
     @GET("/nowplaying/index/station/{shortcode}")
-    public void nowPlaying(@Path("shortcode") String shortcode, Callback<?> callback);
+    public Observable<?> nowPlaying(@Path("shortcode") String shortcode);
 
     /*
      * Schedule resources
@@ -42,13 +43,13 @@ public interface API {
      */
 
     @GET("/schedule")
-    public void schedule(Callback<?> callback);
+    public Observable<?> schedule();
 
     @GET("/schedule/index/shortcode/{shortcode}")
-    public void schedule(@Path("shortcode") String shortcode, Callback<?> callback);
+    public Observable<?> schedule(@Path("shortcode") String shortcode);
 
     @GET("/schedule/conventions")
-    public void conventionSchedule(Callback<?> callback);
+    public Observable<?> conventionSchedule();
 
     /*
      * Song resources
@@ -79,30 +80,41 @@ public interface API {
      */
 
     @GET("/show/index")
-    public void shows(Callback<?> callback);
+    public Observable<?> shows();
 
     @GET("/show/index/id/{id}")
-    public void show(@Path("id") int id, Callback<?> callback);
+    public Observable<?> show(@Path("id") int id);
 
     @GET("/show/latest")
-    public void latestShows(Callback<?> callback);
+    public Observable<?> latestShows();
 
     public static class Builder {
 
-        private String host         = "https://ponyvillelive.apiary.io/api";
+        private String    host      = "https://ponyvillelive.apiary.io/api";
         private Converter converter = new GsonConverter(new Gson());
-        private Client client       = new OkClient();
+        /*
+         * For Android L build LVP79 - https://github.com/square/okhttp/issues/967
+         * Revert to OkClient with L update
+         */
+        private Client    client    = new AndroidApacheClient();
 
-        public void setHost(String host) { this.host = host; }
+        public void setHost(String host) {
+            this.host = host;
+        }
 
-        public void setConverter(Converter converter) { this.converter = converter; }
+        public void setConverter(Converter converter) {
+            this.converter = converter;
+        }
 
-        public void setClient(Client client) { this.client = client; }
+        public void setClient(Client client) {
+            this.client = client;
+        }
 
         public API build() {
             return new RestAdapter.Builder()
                     .setEndpoint(host)
                     .setConverter(converter)
+                    .setLogLevel(RestAdapter.LogLevel.FULL)
                     .setClient(client)
                     .build()
                     .create(API.class);
