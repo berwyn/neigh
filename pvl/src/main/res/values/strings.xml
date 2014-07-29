@@ -2,7 +2,15 @@
 <resources>
 
     <string name="app_name">Ponyville Live!</string>
+
+    <!-- Activity titles -->
     <string name="title_activity_tvbrowse">Browse</string>
+
+    <!-- Section headers -->
+    <string name="header_radio">Radio</string>
+    <string name="header_video">Video</string>
+
+
     <string name="title_section1">Section 1</string>
     <string name="title_section2">Section 2</string>
     <string name="title_section3">Section 3</string>

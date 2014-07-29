@@ -7,7 +7,6 @@ import java.util.Timer;
 import java.util.TimerTask;
 
 import android.content.Intent;
-import android.graphics.Color;
 import android.graphics.drawable.Drawable;
 import android.os.Bundle;
 import android.os.Handler;
@@ -19,85 +18,81 @@ import android.support.v17.leanback.widget.ListRow;
 import android.support.v17.leanback.widget.ListRowPresenter;
 import android.support.v17.leanback.widget.OnItemClickedListener;
 import android.support.v17.leanback.widget.OnItemSelectedListener;
-import android.support.v17.leanback.widget.Presenter;
-import android.support.v17.leanback.widget.Row;
 import android.util.DisplayMetrics;
 import android.util.Log;
-import android.view.Gravity;
-import android.view.View;
-import android.view.ViewGroup;
-import android.widget.TextView;
 import android.widget.Toast;
 
+import com.ponyvillelive.android.PVL;
 import com.ponyvillelive.android.R;
+import com.ponyvillelive.android.model.Station;
+import com.ponyvillelive.android.net.API;
 import com.squareup.picasso.Picasso;
 import com.squareup.picasso.Target;
+
+import javax.inject.Inject;
 
 
 public class TVBrowseFragment extends BrowseFragment {
     private static final String TAG = "TVBrowseFragment";
 
-    private static final int NUM_ROWS = 6;
+    private static final int NUM_ROWS = 4;
     private static final int NUM_COLS = 15;
 
-    private ArrayObjectAdapter mRowsAdapter;
-    private Drawable mDefaultBackground;
-    private Target mBackgroundTarget;
-    private DisplayMetrics mMetrics;
-    private Timer mBackgroundTimer;
     private final Handler mHandler = new Handler();
-    private URI mBackgroundURI;
-    Movie mMovie;
+
+    private ArrayObjectAdapter rowsAdapter;
+    private ArrayObjectAdapter radioAdapter;
+    private ArrayObjectAdapter videoAdapter;
+
+    private Drawable            mDefaultBackground;
+    private Target              mBackgroundTarget;
+    private DisplayMetrics      mMetrics;
+    private Timer               mBackgroundTimer;
+    private URI                 mBackgroundURI;
+
     CardPresenter mCardPresenter;
+    @Inject
+    API api;
 
     @Override
     public void onActivityCreated(Bundle savedInstanceState) {
         Log.i(TAG, "onCreate");
         super.onActivityCreated(savedInstanceState);
 
+        ((PVL) getActivity().getApplication()).getGraph().inject(this);
+
         prepareBackgroundManager();
-
         setupUIElements();
-
         loadRows();
-
         setupEventListeners();
     }
 
     private void loadRows() {
-        List<Movie> list = MovieList.setupMovies();
-
-        mRowsAdapter = new ArrayObjectAdapter(new ListRowPresenter());
+        rowsAdapter = new ArrayObjectAdapter(new ListRowPresenter());
         mCardPresenter = new CardPresenter();
 
-        int i;
-        for (i = 0; i < NUM_ROWS; i++) {
-            if (i != 0) {
-                Collections.shuffle(list);
-            }
-            ArrayObjectAdapter listRowAdapter = new ArrayObjectAdapter(mCardPresenter);
-            for (int j = 0; j < NUM_COLS; j++) {
-                listRowAdapter.add(list.get(j % 5));
-            }
-            HeaderItem header = new HeaderItem(i, MovieList.MOVIE_CATEGORY[i], null);
-            mRowsAdapter.add(new ListRow(header, listRowAdapter));
-        }
+        radioAdapter = new ArrayObjectAdapter(mCardPresenter);
+        videoAdapter = new ArrayObjectAdapter(mCardPresenter);
+        HeaderItem radioHeader = new HeaderItem(getString(R.string.header_radio), "");
+        HeaderItem videoHeader = new HeaderItem(getString(R.string.header_video), "");
 
-        HeaderItem gridHeader = new HeaderItem(i, "PREFERENCES", null);
+        rowsAdapter.add(new ListRow(radioHeader, radioAdapter));
+        rowsAdapter.add(new ListRow(videoHeader, videoAdapter));
 
-        GridItemPresenter mGridPresenter = new GridItemPresenter();
-        ArrayObjectAdapter gridRowAdapter = new ArrayObjectAdapter(mGridPresenter);
-        gridRowAdapter.add(getResources().getString(R.string.grid_view));
-        gridRowAdapter.add(getResources().getString(R.string.send_feeback));
-        gridRowAdapter.add(getResources().getString(R.string.personal_settings));
-        mRowsAdapter.add(new ListRow(gridHeader, gridRowAdapter));
+        api.stations().subscribe((response) -> {
+           for(Station station : response.result) {
+               if(station.category.equals(Station.CATEGORY_AUDIO)) {
+                   radioAdapter.add(station);
+               } else {
+                   videoAdapter.add(station);
+               }
+           }
+        });
 
-        setAdapter(mRowsAdapter);
-
+        setAdapter(rowsAdapter);
     }
 
     private void prepareBackgroundManager() {
-
         BackgroundManager backgroundManager = BackgroundManager.getInstance(getActivity());
         backgroundManager.attach(getActivity().getWindow());
         mBackgroundTarget = new PicassoBackgroundManagerTarget(backgroundManager);
@@ -109,59 +104,33 @@ public class TVBrowseFragment extends BrowseFragment {
     }
 
     private void setupUIElements() {
-        // setBadgeDrawable(getActivity().getResources().getDrawable(
-        // R.drawable.videos_by_google_banner));
-        setTitle(getString(R.string.browse_title)); // Badge, when set, takes precedent
-                                                    // over title
+        setTitle(getString(R.string.app_name));
         setHeadersState(HEADERS_ENABLED);
         setHeadersTransitionOnBackEnabled(true);
 
         // set fastLane (or headers) background color
-        setBrandColor(getResources().getColor(R.color.fastlane_background));
+        setBrandColor(getResources().getColor(R.color.colorPrimary));
         // set search icon color
-        setSearchAffordanceColor(getResources().getColor(R.color.search_opaque));
+        setSearchAffordanceColor(getResources().getColor(R.color.colorPrimaryDark));
     }
 
     private void setupEventListeners() {
-        setOnItemSelectedListener(getDefaultItemSelectedListener());
-        setOnItemClickedListener(getDefaultItemClickedListener());
-        setOnSearchClickedListener(new View.OnClickListener() {
-            @Override
-            public void onClick(View view) {
-                Toast.makeText(getActivity(), "Implement your own in-app search", Toast.LENGTH_LONG)
-                        .show();
-            }
-        });
+//        setOnItemSelectedListener(getDefaultItemSelectedListener());
+//        setOnItemClickedListener(getDefaultItemClickedListener());
     }
 
     protected OnItemSelectedListener getDefaultItemSelectedListener() {
-        return new OnItemSelectedListener() {
-            @Override
-            public void onItemSelected(Object item, Row row) {
-                if (item instanceof Movie) {
-                    mBackgroundURI = ((Movie) item).getBackgroundImageURI();
-                    startBackgroundTimer();
-                }
+        return (item, row) -> {
+            if(item instanceof Station) {
+                mBackgroundURI = URI.create(((Station) item).imageUrl);
+                startBackgroundTimer();
             }
         };
     }
 
     protected OnItemClickedListener getDefaultItemClickedListener() {
-        return new OnItemClickedListener() {
-            @Override
-            public void onItemClicked(Object item, Row row) {
-                if (item instanceof Movie) {
-                    Movie movie = (Movie) item;
-                    Log.d(TAG, "Item: " + item.toString());
-                    Intent intent = new Intent(getActivity(), TVDetailsActivity.class);
-                    intent.putExtra(getString(R.string.movie), movie);
-                    startActivity(intent);
-                }
-                else if (item instanceof String) {
-                    Toast.makeText(getActivity(), (String) item, Toast.LENGTH_SHORT)
-                            .show();
-                }
-            }
+        return (item, row) -> {
+            // TODO: Start the player
         };
     }
 
@@ -199,42 +168,14 @@ public class TVBrowseFragment extends BrowseFragment {
     }
 
     private class UpdateBackgroundTask extends TimerTask {
-
         @Override
         public void run() {
-            mHandler.post(new Runnable() {
-                @Override
-                public void run() {
-                    if (mBackgroundURI != null) {
-                        updateBackground(mBackgroundURI);
-                    }
+            mHandler.post(() -> {
+                if (mBackgroundURI != null) {
+                    updateBackground(mBackgroundURI);
                 }
             });
 
         }
     }
-
-    private class GridItemPresenter extends Presenter {
-        @Override
-        public ViewHolder onCreateViewHolder(ViewGroup parent) {
-            TextView view = new TextView(parent.getContext());
-            view.setLayoutParams(new ViewGroup.LayoutParams(200, 200));
-            view.setFocusable(true);
-            view.setFocusableInTouchMode(true);
-            view.setBackgroundColor(getResources().getColor(R.color.default_background));
-            view.setTextColor(Color.WHITE);
-            view.setGravity(Gravity.CENTER);
-            return new ViewHolder(view);
-        }
-
-        @Override
-        public void onBindViewHolder(ViewHolder viewHolder, Object item) {
-            ((TextView) viewHolder.view).setText((String) item);
-        }
-
-        @Override
-        public void onUnbindViewHolder(ViewHolder viewHolder) {
-        }
-    }
-
 }

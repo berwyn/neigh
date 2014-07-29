@@ -53,7 +53,6 @@ public class PlayerActivity extends Activity {
     private Timer mControllersTimer;
     private PlaybackState mPlaybackState;
     private final Handler mHandler = new Handler();
-    private Movie mSelectedMovie;
     private boolean mShouldStartPlayback;
     private boolean mControlersVisible;
     private int mDuration;
@@ -82,27 +81,27 @@ public class PlayerActivity extends Activity {
     }
 
     private void startVideoPlayer() {
-        Bundle b = getIntent().getExtras();
-        mSelectedMovie = (Movie) getIntent().getSerializableExtra(getResources().getString(R.string.movie));
-        if (null != b) {
-            mShouldStartPlayback = b.getBoolean(getResources().getString(R.string.should_start));
-            int startPosition = b.getInt(getResources().getString(R.string.start_position), 0);
-            mVideoView.setVideoPath(mSelectedMovie.getVideoUrl());
-            if (mShouldStartPlayback) {
-                mPlaybackState = PlaybackState.PLAYING;
-                updatePlayButton(mPlaybackState);
-                if (startPosition > 0) {
-                    mVideoView.seekTo(startPosition);
-                }
-                mVideoView.start();
-                mPlayPause.requestFocus();
-                startControllersTimer();
-            } else {
-                updatePlaybackLocation();
-                mPlaybackState = PlaybackState.PAUSED;
-                updatePlayButton(mPlaybackState);
-            }
-        }
+//        Bundle b = getIntent().getExtras();
+//        mSelectedMovie = (Movie) getIntent().getSerializableExtra(getResources().getString(R.string.movie));
+//        if (null != b) {
+//            mShouldStartPlayback = b.getBoolean(getResources().getString(R.string.should_start));
+//            int startPosition = b.getInt(getResources().getString(R.string.start_position), 0);
+//            mVideoView.setVideoPath(mSelectedMovie.getVideoUrl());
+//            if (mShouldStartPlayback) {
+//                mPlaybackState = PlaybackState.PLAYING;
+//                updatePlayButton(mPlaybackState);
+//                if (startPosition > 0) {
+//                    mVideoView.seekTo(startPosition);
+//                }
+//                mVideoView.start();
+//                mPlayPause.requestFocus();
+//                startControllersTimer();
+//            } else {
+//                updatePlaybackLocation();
+//                mPlaybackState = PlaybackState.PAUSED;
+//                updatePlayButton(mPlaybackState);
+//            }
+//        }
     }
 
     private void updatePlaybackLocation() {
@@ -233,13 +232,10 @@ public class PlayerActivity extends Activity {
 
         @Override
         public void run() {
-            mHandler.post(new Runnable() {
-                @Override
-                public void run() {
-                    Intent intent = new Intent(PlayerActivity.this, TVDetailsActivity.class);
-                    intent.putExtra(getResources().getString(R.string.movie), mSelectedMovie);
-                    startActivity(intent);
-                }
+            mHandler.post(() -> {
+//                Intent intent = new Intent(PlayerActivity.this, TVDetailsActivity.class);
+//                intent.putExtra(getResources().getString(R.string.movie), mSelectedMovie);
+//                startActivity(intent);
             });
 
         }

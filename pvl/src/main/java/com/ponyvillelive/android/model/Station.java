@@ -7,6 +7,9 @@ import com.google.gson.annotations.SerializedName;
  */
 public class Station {
 
+    public static final String CATEGORY_AUDIO = "audio";
+    public static final String CATEGORY_VIDEO = "video";
+
     public int id;
     public String name;
     public String shortcode;

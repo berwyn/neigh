@@ -11,6 +11,7 @@ import android.view.View;
 import android.view.ViewGroup;
 
 import com.ponyvillelive.android.R;
+import com.ponyvillelive.android.model.Station;
 import com.squareup.picasso.Picasso;
 import com.squareup.picasso.Target;
 
@@ -24,9 +25,9 @@ public class CardPresenter extends Presenter {
     private static int CARD_HEIGHT = 176;
 
     static class ViewHolder extends Presenter.ViewHolder {
-        private Movie mMovie;
-        private ImageCardView mCardView;
-        private Drawable mDefaultCardImage;
+        private Station                    station;
+        private ImageCardView              mCardView;
+        private Drawable                   mDefaultCardImage;
         private PicassoImageCardViewTarget mImageCardViewTarget;
 
         public ViewHolder(View view) {
@@ -36,12 +37,12 @@ public class CardPresenter extends Presenter {
             mDefaultCardImage = mContext.getResources().getDrawable(R.drawable.movie);
         }
 
-        public void setMovie(Movie m) {
-            mMovie = m;
+        public void setStation(Station s) {
+            station = s;
         }
 
-        public Movie getMovie() {
-            return mMovie;
+        public Station getStation() {
+            return station;
         }
 
         public ImageCardView getCardView() {
@@ -52,7 +53,7 @@ public class CardPresenter extends Presenter {
             Picasso.with(mContext)
                     .load(uri.toString())
                     .resize(CARD_WIDTH, CARD_HEIGHT)
-                    .centerCrop()
+                    .centerInside()
                     .error(mDefaultCardImage)
                     .into(mImageCardViewTarget);
         }
@@ -66,23 +67,23 @@ public class CardPresenter extends Presenter {
         ImageCardView cardView = new ImageCardView(mContext);
         cardView.setFocusable(true);
         cardView.setFocusableInTouchMode(true);
-        cardView.setBackgroundColor(mContext.getResources().getColor(R.color.fastlane_background));
+        cardView.setBackgroundColor(mContext.getResources().getColor(R.color.colorPrimary));
         return new ViewHolder(cardView);
     }
 
     @Override
     public void onBindViewHolder(Presenter.ViewHolder viewHolder, Object item) {
-        Movie movie = (Movie) item;
-        ((ViewHolder) viewHolder).setMovie(movie);
+        Station station = (Station) item;
+        ((ViewHolder) viewHolder).setStation(station);
 
         Log.d(TAG, "onBindViewHolder");
-        if (movie.getCardImageUrl() != null) {
-            ((ViewHolder) viewHolder).mCardView.setTitleText(movie.getTitle());
-            ((ViewHolder) viewHolder).mCardView.setContentText(movie.getStudio());
+        if (station.imageUrl != null) {
+            ((ViewHolder) viewHolder).mCardView.setTitleText(station.name);
+            ((ViewHolder) viewHolder).mCardView.setContentText(station.genre);
             ((ViewHolder) viewHolder).mCardView.setMainImageDimensions(CARD_WIDTH, CARD_HEIGHT);
             //((ViewHolder) viewHolder).mCardView.setBadgeImage(mContext.getResources().getDrawable(
             //        R.drawable.videos_by_google_icon));
-            ((ViewHolder) viewHolder).updateCardViewImage(movie.getCardImageURI());
+            ((ViewHolder) viewHolder).updateCardViewImage(URI.create(station.imageUrl));
         }
     }
 
