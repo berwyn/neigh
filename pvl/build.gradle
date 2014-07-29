@@ -20,17 +20,16 @@ repositories {
 dependencies {
     compile fileTree(dir: 'libs', include: ['*.jar'])
     provided 'com.squareup.dagger:dagger-compiler:1.2.+'
-    compile 'com.google.code.gson:gson:2.2.+'
-
     /*
-     * For Android L build LVP79 - https://github.com/square/okhttp/issues/967
-     * Use after L is updated
-     */
+         * For Android L build LVP79 - https://github.com/square/okhttp/issues/967
+         * Use after L is updated
+         */
     // compile 'com.squareup.okhttp:okhttp:2.0.+'
-
-    compile 'com.squareup.okhttp:okhttp-urlconnection:2.0.+'
+    // compile 'com.squareup.okhttp:okhttp-urlconnection:2.0.+'
+    compile project(':common')
+    compile 'com.google.code.gson:gson:2.2.+'
     compile 'com.squareup.retrofit:retrofit:1.6.+'
-    compile 'com.squareup.picasso:picasso:2.3.+'
+    compile 'com.squareup.picasso:picasso:2.3.2'
     compile 'com.squareup.dagger:dagger:1.2.1'
     compile 'com.jakewharton:butterknife:5.1.+'
     compile 'com.netflix.rxjava:rxjava-android:0.19.+'
@@ -43,5 +42,5 @@ dependencies {
     compile 'com.android.support:recyclerview-v7:+'
     compile 'com.android.support:support-v4:+'
     compile 'com.android.support:support-v13:+'
-    compile project(':common')
+    compile 'com.android.support:leanback-v17:+'
 }
