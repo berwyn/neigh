@@ -21,7 +21,7 @@ public class CardPresenter extends Presenter {
     private static final String TAG = "CardPresenter";
 
     private static Context mContext;
-    private static int CARD_WIDTH = 313;
+    private static int CARD_WIDTH = 320;
     private static int CARD_HEIGHT = 176;
 
     static class ViewHolder extends Presenter.ViewHolder {
@@ -81,8 +81,8 @@ public class CardPresenter extends Presenter {
             ((ViewHolder) viewHolder).mCardView.setTitleText(station.name);
             ((ViewHolder) viewHolder).mCardView.setContentText(station.genre);
             ((ViewHolder) viewHolder).mCardView.setMainImageDimensions(CARD_WIDTH, CARD_HEIGHT);
-            //((ViewHolder) viewHolder).mCardView.setBadgeImage(mContext.getResources().getDrawable(
-            //        R.drawable.videos_by_google_icon));
+//            ((ViewHolder) viewHolder).mCardView.setBadgeImage(mContext.getResources().getDrawable(
+//                    R.drawable.videos_by_google_icon));
             ((ViewHolder) viewHolder).updateCardViewImage(URI.create(station.imageUrl));
         }
     }
