@@ -1,0 +1,11 @@
+<?xml version="1.0" encoding="utf-8"?>
+<resources>
+    <style name="Theme.Neigh.Material" parent="android:Theme.Material.Light.DarkActionBar">
+        <item name="android:actionBarTheme">@style/ActionBarThemeOverlay</item>
+    </style>
+    <style name="ActionBarThemeOverlay" parent="">
+        <item name="android:textColorPrimary">#fff</item>
+        <item name="android:colorControlNormal">#fff</item>
+        <item name="android:colorControlHighlight">#3fff</item>
+    </style>
+</resources>

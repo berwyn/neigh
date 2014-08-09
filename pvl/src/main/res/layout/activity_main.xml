@@ -44,7 +44,7 @@
             <!--android:layout_width="match_parent"-->
             <!--android:layout_height="match_parent"-->
             <!--android:gravity="center|top"-->
-            <!--&lt;!&ndash;android:name="com.ponyvillelive.app.ui.BottomDrawerFragment"&ndash;&gt;-->
+            <!--&lt;!&ndash;android:name="com.ponyvillelive.app.BaseActivity.java.BottomDrawerFragment"&ndash;&gt;-->
             <!--tools:layout="@layout/fragment_bottom_drawer"/>-->
     </com.sothree.slidinguppanel.SlidingUpPanelLayout>
 </LinearLayout>
