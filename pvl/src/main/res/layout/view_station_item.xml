@@ -22,13 +22,13 @@
             android:id="@+id/text_station_name"
             android:layout_width="fill_parent"
             android:layout_height="wrap_content"
-            style="@android:style/TextAppearance.Material.Large"
+            style="@android:style/TextAppearance.Holo.Large"
             tools:text="Wonderbolts Radio"/>
         <TextView
             android:id="@+id/text_station_genre"
             android:layout_width="fill_parent"
             android:layout_height="wrap_content"
-            style="@android:style/TextAppearance.Material.Medium"
+            style="@android:style/TextAppearance.Holo.Medium"
             tools:text="Rock Music"/>
         </LinearLayout>
 </LinearLayout>

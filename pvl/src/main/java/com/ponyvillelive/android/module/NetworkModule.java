@@ -1,8 +1,7 @@
 package com.ponyvillelive.android.module;
 
 import com.ponyvillelive.android.net.API;
-import com.ponyvillelive.android.ui.StationAdapter;
-import com.ponyvillelive.android.ui.TVBrowseFragment;
+import com.ponyvillelive.android.ui.StationFragment;
 
 import javax.inject.Singleton;
 
@@ -14,8 +13,7 @@ import dagger.Provides;
  */
 @Module(
         injects = {
-                StationAdapter.class,
-                TVBrowseFragment.class
+                StationFragment.class
         }
 )
 public class NetworkModule {

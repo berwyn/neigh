@@ -6,8 +6,8 @@ apply from: '../retrolambda.gradle'
 android {
     defaultConfig {
         applicationId "org.eqbeats.android"
-        minSdkVersion 'L'
-        targetSdkVersion 'L'
+        minSdkVersion 15
+        targetSdkVersion 19
         versionCode 1
         versionName "1.0"
     }
@@ -16,6 +16,6 @@ android {
 dependencies {
     compile fileTree(dir: 'libs', include: ['*.jar'])
     // You must install or update the Support Repository through the SDK manager to use this dependency.
-    compile 'com.android.support:support-v13:19.+'
+    compile 'com.android.support:support-v13:20.+'
     compile project(':common')
 }
