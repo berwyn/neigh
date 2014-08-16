@@ -1,4 +1,4 @@
-package com.ponyvillelive.android.module;
+package com.ponyvillelive.android.net;
 
 import com.ponyvillelive.android.net.API;
 import com.ponyvillelive.android.ui.StationFragment;

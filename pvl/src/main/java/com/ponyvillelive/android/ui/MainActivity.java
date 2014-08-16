@@ -13,16 +13,25 @@ import android.view.View;
 import android.view.ViewGroup;
 
 import com.astuetz.PagerSlidingTabStrip;
+import com.ponyvillelive.android.PVL;
 import com.ponyvillelive.android.R;
 import com.sothree.slidinguppanel.SlidingUpPanelLayout;
 
 import java.util.Locale;
 
+import javax.inject.Inject;
+
 import butterknife.ButterKnife;
 import butterknife.InjectView;
-
+import so.codeweaver.neigh.NeighApp;
+import so.codeweaver.neigh.ui.AppContainer;
 
 public class MainActivity extends Activity {
+
+    @Inject
+    AppContainer appContainer;
+
+    private ViewGroup container;
 
     /**
      * The {@link android.support.v4.view.PagerAdapter} that will provide
@@ -43,7 +52,12 @@ public class MainActivity extends Activity {
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
-        setContentView(R.layout.activity_main);
+
+        NeighApp app = PVL.get(this);
+        app.inject(this);
+
+        container = appContainer.get(this, app);
+        getLayoutInflater().inflate(R.layout.activity_main, container);
 
         sectionsPagerAdapter = new SectionsPagerAdapter(getFragmentManager());
         ButterKnife.inject(this);
