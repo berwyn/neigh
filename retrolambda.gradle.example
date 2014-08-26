@@ -1,0 +1,5 @@
+retrolambda {
+	jdk 'path/to/jdk8'
+	oldJdk 'path/to/jdk7'
+    javaVersion JavaVersion.VERSION_1_7
+}

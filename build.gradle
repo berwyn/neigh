@@ -5,23 +5,6 @@ buildscript {
     }
     dependencies {
         classpath 'com.android.tools.build:gradle:0.12.+'
-        classpath 'me.tatarka:gradle-retrolambda:2.0.+'
-    }
-}
-
-subprojects {
-    buildscript {
-        repositories {
-            jcenter()
-        }
-        dependencies {
-            classpath 'com.android.tools.build:gradle:0.12.+'
-            classpath 'me.tatarka:gradle-retrolambda:2.0.+'
-        }
-    }
-
-    repositories {
-        jcenter()
     }
 }
 
