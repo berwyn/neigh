@@ -1,17 +1,32 @@
+buildscript {
+    repositories {
+        mavenCentral()
+    }
+    dependencies {
+        classpath 'com.android.tools.build:gradle:0.13.0'
+        classpath 'me.tatarka:gradle-retrolambda:2.2.3'
+    }
+}
+
 apply plugin: 'com.android.library'
 apply plugin: 'retrolambda'
 apply from: '../retrolambda.gradle'
+apply plugin: 'maven-publish'
+
+repositories {
+    mavenCentral()
+}
 
 android {
     compileSdkVersion 20
-    buildToolsVersion "20.0.0"
+    buildToolsVersion '20.0.0'
 
     defaultConfig {
-        applicationId "so.codeweaver.neigh"
+        applicationId 'so.codeweaver.neigh'
         minSdkVersion 14
         targetSdkVersion 20
         versionCode 1
-        versionName "1.0"
+        versionName '1.0.0'
     }
 
     compileOptions {
@@ -26,6 +41,42 @@ android {
     }
 }
 
+def debug = hasProperty('debug')
+publishing {
+    publications {
+        maven(MavenPublication) {
+            groupId android.defaultConfig.applicationId
+            artifactId 'neigh'
+            version android.defaultConfig.versionName.concat(debug? '-SNAPSHOT' : '')
+            artifact file('./build/outputs/aar/library.aar')
+            artifact source: androidSourcesJar, classifier: 'sources', extension: 'jar'
+            artifact source: androidJavadocsJar, classifier: 'javadoc', extension: 'jar'
+        }
+    }
+}
+
+def variant = android.libraryVariants[debug? 'debug' : 'release']
+task generateJavadoc(type: Javadoc) {
+    source = variant.javaCompile.source
+    ext.androidJar = "${android.sdkDirectory}/platforms/${android.compileSdkVersion}/android.jar"
+    classpath = files(variant.javaCompile.classpath.files) + files(ext.androidJar)
+    options.links("http://docs.oracle.com/javase/7/docs/api/");
+    options.links("http://d.android.com/reference/");
+    exclude '**/BuildConfig.java'
+    exclude '**/R.java'
+}
+
+task androidJavadocsJar(type: Jar) {
+    classifier = 'javadoc'
+    from generateJavadoc.destinationDir
+}
+
+task androidSourcesJar(type: Jar) {
+    classifier = 'sources'
+    from android.sourceSets.main.java.sourceFiles
+}
+
 dependencies {
     compile fileTree(dir: 'libs', include: ['*.jar'])
+    compile 'com.android.support:mediarouter-v7:20.0.0'
 }
