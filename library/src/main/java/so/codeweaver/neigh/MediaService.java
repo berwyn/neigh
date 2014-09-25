@@ -13,37 +13,45 @@ import android.os.PowerManager;
 import android.support.v7.media.MediaRouter;
 
 import java.io.IOException;
-import java.util.ArrayDeque;
-import java.util.Queue;
+import java.util.ArrayList;
+import java.util.List;
 
 public class MediaService extends Service implements
         MediaPlayer.OnPreparedListener,
         MediaPlayer.OnBufferingUpdateListener,
         MediaPlayer.OnErrorListener,
+        MediaPlayer.OnCompletionListener,
         AudioManager.OnAudioFocusChangeListener {
 
-    public static final String TAG_WIFI_LOCK = "so.codeweaver.neigh.WIFI_LOCK";
-    public static final int TAG_FOREGROUND = 1337;
-    public static final String ACTION_PLAY = "so.codeweaver.neigh.PLAY";
-    public static final String ACTION_STOP = "so.codeweaver.neigh.STOP";
+    // Actions
+    public static final String ACTION_PLAY  = "so.codeweaver.neigh.PLAY";
+    public static final String ACTION_PAUSE = "so.codeweaver.neigh.PAUSE";
+    public static final String ACTION_STOP  = "so.codeweaver.neigh.STOP";
+    public static final String ACTION_NEXT  = "so.codeweaver.neigh.NEXT";
+    public static final String ACTION_PREV  = "so.codeweaver.neigh.PREV";
 
-    private MediaPlayer player;
-    private MediaBinder binder;
-    private MediaRouter mediaRouter;
-    private ServiceClient client;
+    // Tags
+    private static final String TAG_WIFI_LOCK  = "so.codeweaver.neigh.WIFI_LOCK";
+    private static final int    TAG_FOREGROUND = 1337;
+
+    private MediaPlayer          player;
+    private MediaBinder          binder;
+    private MediaRouter          mediaRouter;
+    private ServiceClient        client;
     private WifiManager.WifiLock wifiLock;
 
-    private Queue<Uri> playQueue;
+    private int       trackingIndex;
+    private List<Uri> playQueue;
 
     public MediaService() {
-        playQueue = new ArrayDeque<>();
+        playQueue = new ArrayList<>();
     }
 
     @Override
     public int onStartCommand(Intent intent, int flags, int startId) {
         super.onStartCommand(intent, flags, startId);
 
-        switch (intent.getAction()) {
+        switch(intent.getAction()) {
             case ACTION_PLAY:
                 handleActionPlay(intent);
                 break;
@@ -71,7 +79,7 @@ public class MediaService extends Service implements
 
     @Override
     public void onPrepared(MediaPlayer mp) {
-        Notification notification = client.provideForegroundNotification(playQueue.peek());
+        Notification notification = client.provideForegroundNotification(playQueue.get(trackingIndex));
         startForeground(TAG_FOREGROUND, notification);
         mp.start();
     }
@@ -89,17 +97,27 @@ public class MediaService extends Service implements
     }
 
     @Override
+    public void onCompletion(MediaPlayer mp) {
+        if(++trackingIndex < playQueue.size()) {
+            prepareMediaPlayer(playQueue.get(trackingIndex));
+        }
+    }
+
+    @Override
     public void onAudioFocusChange(int focusChange) {
         switch(focusChange) {
             case AudioManager.AUDIOFOCUS_GAIN:
                 // We've gained focus, so we should start playback, initialising the player
                 // as needed.
-                if(player == null) {
-                    initMediaPlayer();
-                } else if(!player.isPlaying()) {
-                    onPrepared(player);
+                if(player != null) {
+                    player.setVolume(1.0f, 1.0f);
+                    if(!player.isPlaying()) {
+                        player.start();
+                    }
+                } else if(trackingIndex < playQueue.size()) {
+                    player = initMediaPlayer();
+                    prepareMediaPlayer(playQueue.get(trackingIndex));
                 }
-                player.setVolume(1.0f, 1.0f);
                 break;
             case AudioManager.AUDIOFOCUS_LOSS:
                 // We've lost focus for an unknown amount of time
@@ -154,13 +172,18 @@ public class MediaService extends Service implements
         Uri uri = intent.getData();
         playQueue.clear();
         playQueue.add(uri);
+        trackingIndex = 0;
 
+        prepareMediaPlayer(uri);
+    }
+
+    private void prepareMediaPlayer(Uri uri) {
         try {
             player = initMediaPlayer();
             if(player == null) return;
             player.setDataSource(getApplicationContext(), uri);
             player.prepareAsync();
-        } catch (IOException e) {
+        } catch(IOException e) {
             // TODO: Real logic
             throw new RuntimeException("I just don't know what went wrong D:");
         }
