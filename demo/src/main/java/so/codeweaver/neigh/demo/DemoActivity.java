@@ -20,11 +20,11 @@ import so.codeweaver.neigh.MediaService;
 
 public class DemoActivity extends Activity {
 
-    @InjectView(so.codeweaver.neighdemo.R.id.demo_action_spinner)
+    @InjectView(so.codeweaver.neigh.demo.R.id.demo_action_spinner)
     Spinner actionSpinner;
-    @InjectView(so.codeweaver.neighdemo.R.id.demo_song_spinner)
+    @InjectView(so.codeweaver.neigh.demo.R.id.demo_song_spinner)
     Spinner songSpinner;
-    @InjectView(so.codeweaver.neighdemo.R.id.demo_intent_button)
+    @InjectView(so.codeweaver.neigh.demo.R.id.demo_intent_button)
     Button  intentButton;
 
     private List<CharSequence> intentNames;
@@ -34,7 +34,7 @@ public class DemoActivity extends Activity {
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
-        setContentView(so.codeweaver.neighdemo.R.layout.activity_demo);
+        setContentView(so.codeweaver.neigh.demo.R.layout.activity_demo);
         ButterKnife.inject(this);
 
         intentNames = Arrays.asList(
@@ -52,7 +52,7 @@ public class DemoActivity extends Activity {
         rawNames = new ArrayList<>();
         rawValues = new ArrayList<>();
 
-        Class<so.codeweaver.neighdemo.R.raw> clazz = so.codeweaver.neighdemo.R.raw.class;
+        Class<so.codeweaver.neigh.demo.R.raw> clazz = so.codeweaver.neigh.demo.R.raw.class;
         Field[] fields = clazz.getDeclaredFields();
         for(Field field : fields) {
             rawNames.add(field.getName());
@@ -74,7 +74,7 @@ public class DemoActivity extends Activity {
     @Override
     public boolean onCreateOptionsMenu(Menu menu) {
         // Inflate the menu; this adds items to the action bar if it is present.
-        getMenuInflater().inflate(so.codeweaver.neighdemo.R.menu.demo, menu);
+        getMenuInflater().inflate(R.menu.demo, menu);
         return true;
     }
 
@@ -86,7 +86,7 @@ public class DemoActivity extends Activity {
         int id = item.getItemId();
 
         //noinspection SimplifiableIfStatement
-        if (id == so.codeweaver.neighdemo.R.id.action_settings) {
+        if (id == R.id.action_settings) {
             return true;
         }
 
