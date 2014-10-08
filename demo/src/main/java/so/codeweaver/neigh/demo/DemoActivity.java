@@ -1,7 +1,15 @@
 package so.codeweaver.neigh.demo;
 
 import android.app.Activity;
+import android.app.Notification;
+import android.content.ComponentName;
+import android.content.Context;
+import android.content.Intent;
+import android.content.ServiceConnection;
+import android.net.Uri;
 import android.os.Bundle;
+import android.os.IBinder;
+import android.support.v4.app.NotificationCompat;
 import android.view.Menu;
 import android.view.MenuItem;
 import android.widget.ArrayAdapter;
@@ -15,21 +23,25 @@ import java.util.List;
 
 import butterknife.ButterKnife;
 import butterknife.InjectView;
+import butterknife.OnClick;
 import so.codeweaver.neigh.MediaService;
+import so.codeweaver.neigh.ServiceClient;
 
 
-public class DemoActivity extends Activity {
+public class DemoActivity extends Activity implements ServiceClient {
 
-    @InjectView(so.codeweaver.neigh.demo.R.id.demo_action_spinner)
+    @InjectView(R.id.demo_action_spinner)
     Spinner actionSpinner;
-    @InjectView(so.codeweaver.neigh.demo.R.id.demo_song_spinner)
+    @InjectView(R.id.demo_song_spinner)
     Spinner songSpinner;
-    @InjectView(so.codeweaver.neigh.demo.R.id.demo_intent_button)
+    @InjectView(R.id.demo_intent_button)
     Button  intentButton;
 
     private List<CharSequence> intentNames;
     private List<CharSequence> rawNames;
     private List<Integer>      rawValues;
+
+    private MediaService.MediaBinder mediaBinder;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -52,7 +64,7 @@ public class DemoActivity extends Activity {
         rawNames = new ArrayList<>();
         rawValues = new ArrayList<>();
 
-        Class<so.codeweaver.neigh.demo.R.raw> clazz = so.codeweaver.neigh.demo.R.raw.class;
+        Class<R.raw> clazz = R.raw.class;
         Field[] fields = clazz.getDeclaredFields();
         for(Field field : fields) {
             rawNames.add(field.getName());
@@ -79,6 +91,25 @@ public class DemoActivity extends Activity {
     }
 
     @Override
+    protected void onStart() {
+        super.onStart();
+
+        Intent serviceIntent = new Intent(this, MediaService.class);
+        bindService(serviceIntent, new ServiceConnection() {
+            @Override
+            public void onServiceConnected(ComponentName name, IBinder service) {
+                DemoActivity.this.mediaBinder = (MediaService.MediaBinder) service;
+                DemoActivity.this.mediaBinder.setServiceClient(DemoActivity.this);
+            }
+
+            @Override
+            public void onServiceDisconnected(ComponentName name) {
+                DemoActivity.this.mediaBinder = null;
+            }
+        }, Context.BIND_AUTO_CREATE);
+    }
+
+    @Override
     public boolean onOptionsItemSelected(MenuItem item) {
         // Handle action bar item clicks here. The action bar will
         // automatically handle clicks on the Home/Up button, so long
@@ -91,5 +122,22 @@ public class DemoActivity extends Activity {
         }
 
         return super.onOptionsItemSelected(item);
+    }
+
+    @OnClick(R.id.demo_intent_button)
+    public void buttonPressed() {
+        int actionIndex = actionSpinner.getSelectedItemPosition();
+        int mediaIndex = songSpinner.getSelectedItemPosition();
+
+        Intent i = new Intent(this, MediaService.class);
+        i.setAction(String.valueOf(intentNames.get(actionIndex)));
+        i.setData(Uri.parse("android.resource://so.codeweaver.neigh.demo/" + rawValues.get(mediaIndex)));
+
+        startService(i);
+    }
+
+    @Override
+    public Notification provideForegroundNotification(Uri uri) {
+        return MediaPlayingNotification.buildNotification(this, "test", 42);
     }
 }

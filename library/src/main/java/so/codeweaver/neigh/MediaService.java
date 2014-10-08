@@ -55,11 +55,16 @@ public class MediaService extends Service implements
             case ACTION_PLAY:
                 handleActionPlay(intent);
                 break;
+            case ACTION_PAUSE:
+                handleActionPause();
+                break;
+            case ACTION_STOP:
+                destroyMediaPlayer();
+                break;
         }
 
         return START_STICKY;
     }
-
 
     @Override
     public IBinder onBind(Intent intent) {
@@ -162,19 +167,36 @@ public class MediaService extends Service implements
 
     private void destroyMediaPlayer() {
         wifiLock.release();
+        if(player != null) {
+            if(player.isPlaying()) {
+                player.stop();
+            }
+            player.release();
+            player = null;
+        }
     }
 
     private void handleActionPlay(Intent intent) {
-        if(intent.getData() == null) {
+        if(intent.getData() == null && player == null) {
             throw new IllegalStateException("You cannot use a null Uri");
         }
 
-        Uri uri = intent.getData();
-        playQueue.clear();
-        playQueue.add(uri);
-        trackingIndex = 0;
+        if(player == null) {
+            Uri uri = intent.getData();
+            playQueue.clear();
+            playQueue.add(uri);
+            trackingIndex = 0;
 
-        prepareMediaPlayer(uri);
+            prepareMediaPlayer(uri);
+        } else {
+            player.start();
+        }
+    }
+
+    private void handleActionPause() {
+        if(player != null && player.isPlaying()) {
+            player.pause();
+        }
     }
 
     private void prepareMediaPlayer(Uri uri) {
