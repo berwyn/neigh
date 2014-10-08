@@ -34,13 +34,12 @@ public class DemoActivity extends Activity implements ServiceClient {
     Spinner actionSpinner;
     @InjectView(R.id.demo_song_spinner)
     Spinner songSpinner;
-    @InjectView(R.id.demo_intent_button)
-    Button  intentButton;
 
     private List<CharSequence> intentNames;
     private List<CharSequence> rawNames;
     private List<Integer>      rawValues;
 
+    private ServiceConnection connection;
     private MediaService.MediaBinder mediaBinder;
 
     @Override
@@ -95,7 +94,7 @@ public class DemoActivity extends Activity implements ServiceClient {
         super.onStart();
 
         Intent serviceIntent = new Intent(this, MediaService.class);
-        bindService(serviceIntent, new ServiceConnection() {
+        connection = new ServiceConnection() {
             @Override
             public void onServiceConnected(ComponentName name, IBinder service) {
                 DemoActivity.this.mediaBinder = (MediaService.MediaBinder) service;
@@ -106,7 +105,8 @@ public class DemoActivity extends Activity implements ServiceClient {
             public void onServiceDisconnected(ComponentName name) {
                 DemoActivity.this.mediaBinder = null;
             }
-        }, Context.BIND_AUTO_CREATE);
+        };
+        bindService(serviceIntent, connection, Context.BIND_AUTO_CREATE);
     }
 
     @Override
@@ -122,6 +122,12 @@ public class DemoActivity extends Activity implements ServiceClient {
         }
 
         return super.onOptionsItemSelected(item);
+    }
+
+    @Override
+    protected void onStop() {
+        super.onStop();
+        unbindService(connection);
     }
 
     @OnClick(R.id.demo_intent_button)

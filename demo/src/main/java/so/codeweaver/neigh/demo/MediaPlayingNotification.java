@@ -13,6 +13,8 @@ import android.net.Uri;
 import android.os.Build;
 import android.support.v4.app.NotificationCompat;
 
+import so.codeweaver.neigh.MediaService;
+
 
 /**
  * Helper class for showing and canceling media playing
@@ -64,11 +66,6 @@ public class MediaPlayingNotification {
                 R.string.media_playing_notification_placeholder_text_template, exampleString);
 
         return new NotificationCompat.Builder(context)
-
-                // Set appropriate defaults for the notification light, sound,
-                // and vibration.
-                .setDefaults(Notification.DEFAULT_ALL)
-
                 // Set required fields, including the small icon, the
                 // notification title, and text.
                 .setSmallIcon(R.drawable.ic_stat_media_playing)
@@ -88,26 +85,13 @@ public class MediaPlayingNotification {
                 // Set ticker text (preview) information for this notification.
                 .setTicker(ticker)
 
-                // Show a number. This is useful when stacking notifications of
-                // a single type.
-                .setNumber(number)
-
-                // If this notification relates to a past or upcoming event, you
-                // should set the relevant time information using the setWhen
-                // method below. If this call is omitted, the notification's
-                // timestamp will by set to the time at which it was shown.
-                // TODO: Call setWhen if this notification relates to a past or
-                // upcoming event. The sole argument to this method should be
-                // the notification timestamp in milliseconds.
-                //.setWhen(...)
-
                 // Set the pending intent to be initiated when the user touches
                 // the notification.
                 .setContentIntent(
                         PendingIntent.getActivity(
                                 context,
                                 0,
-                                new Intent(Intent.ACTION_VIEW, Uri.parse("http://www.google.com")),
+                                new Intent(context, DemoActivity.class),
                                 PendingIntent.FLAG_UPDATE_CURRENT))
 
                 // Example additional actions for this notification. These will
@@ -116,19 +100,13 @@ public class MediaPlayingNotification {
                 // content intent provides access to the same actions in
                 // another way.
                 .addAction(
-                        R.drawable.ic_action_stat_share,
-                        res.getString(R.string.action_share),
-                        PendingIntent.getActivity(
-                                context,
-                                0,
-                                Intent.createChooser(new Intent(Intent.ACTION_SEND)
-                                        .setType("text/plain")
-                                        .putExtra(Intent.EXTRA_TEXT, "Dummy text"), "Dummy title"),
-                                PendingIntent.FLAG_UPDATE_CURRENT))
-                .addAction(
                         R.drawable.ic_action_stat_reply,
                         res.getString(R.string.action_reply),
-                        null)
+                        PendingIntent.getService(
+                                context,
+                                0,
+                                new Intent(MediaService.ACTION_STOP, null, context, MediaService.class),
+                                PendingIntent.FLAG_CANCEL_CURRENT))
 
                 // Automatically dismiss the notification when it is touched.
                 .setAutoCancel(true)
