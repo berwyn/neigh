@@ -166,8 +166,12 @@ public class MediaService extends Service implements
     }
 
     private void destroyMediaPlayer() {
-        wifiLock.release();
         stopForeground(true);
+
+        if(wifiLock != null && wifiLock.isHeld()) {
+            wifiLock.release();
+        }
+
         if(player != null) {
             if(player.isPlaying()) {
                 player.stop();

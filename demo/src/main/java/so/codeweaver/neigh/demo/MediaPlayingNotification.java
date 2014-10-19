@@ -74,6 +74,10 @@ public class MediaPlayingNotification {
 
                 // All fields below this line are optional.
 
+                // Set the notification colour (recognised on devices running Android
+                // 5.0 or later)
+                .setColor(res.getColor(R.color.colorPrimary))
+
                 // Use a default priority (recognized on devices running Android
                 // 4.1 or later)
                 .setPriority(NotificationCompat.PRIORITY_DEFAULT)

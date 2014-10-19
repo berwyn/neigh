@@ -12,7 +12,7 @@ public class NoisyMediaReceiver extends BroadcastReceiver {
     public void onReceive(Context context, Intent intent) {
         if (intent.getAction()
                 .equals(android.media.AudioManager.ACTION_AUDIO_BECOMING_NOISY)) {
-            Intent stopIntent = new Intent(MediaService.ACTION_STOP);
+            Intent stopIntent = new Intent(MediaService.ACTION_PAUSE);
             stopIntent.setClass(context, MediaService.class);
             context.startService(stopIntent);
         }

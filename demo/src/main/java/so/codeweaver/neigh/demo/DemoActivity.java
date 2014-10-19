@@ -1,6 +1,5 @@
 package so.codeweaver.neigh.demo;
 
-import android.app.Activity;
 import android.app.Notification;
 import android.content.ComponentName;
 import android.content.Context;
@@ -9,11 +8,11 @@ import android.content.ServiceConnection;
 import android.net.Uri;
 import android.os.Bundle;
 import android.os.IBinder;
-import android.support.v4.app.NotificationCompat;
+import android.support.v7.app.ActionBarActivity;
+import android.support.v7.widget.Toolbar;
 import android.view.Menu;
 import android.view.MenuItem;
 import android.widget.ArrayAdapter;
-import android.widget.Button;
 import android.widget.Spinner;
 
 import java.lang.reflect.Field;
@@ -28,24 +27,29 @@ import so.codeweaver.neigh.MediaService;
 import so.codeweaver.neigh.ServiceClient;
 
 
-public class DemoActivity extends Activity implements ServiceClient {
+public class DemoActivity extends ActionBarActivity implements ServiceClient {
 
     @InjectView(R.id.demo_action_spinner)
     Spinner actionSpinner;
     @InjectView(R.id.demo_song_spinner)
     Spinner songSpinner;
+    Toolbar toolbar;
 
     private List<CharSequence> intentNames;
     private List<CharSequence> rawNames;
     private List<Integer>      rawValues;
 
-    private ServiceConnection connection;
+    private ServiceConnection        connection;
     private MediaService.MediaBinder mediaBinder;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(so.codeweaver.neigh.demo.R.layout.activity_demo);
+
+        toolbar = (Toolbar) findViewById(R.id.toolbar);
+        setSupportActionBar(toolbar);
+
         ButterKnife.inject(this);
 
         intentNames = Arrays.asList(
@@ -117,7 +121,7 @@ public class DemoActivity extends Activity implements ServiceClient {
         int id = item.getItemId();
 
         //noinspection SimplifiableIfStatement
-        if (id == R.id.action_settings) {
+        if(id == R.id.action_settings) {
             return true;
         }
 
